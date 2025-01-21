@@ -1,0 +1,9 @@
+[package]
+name = "crosstalk"
+version = "0.1.0"
+authors = ["Sean Bentley"]
+edition = "2021"
+rust-version = "1.57"
+
+[lib]
+crate-type = ["cdylib"]

@@ -1,0 +1,8 @@
+version=latest
+
+cont_tag=wasmdevcontainer:${version}
+
+build_user_data=build-wasm-user-data-${version}
+build_user_home=~/.build-wasm-user-home-${version}
+
+devcontainer_name="Wasm Dev Container"

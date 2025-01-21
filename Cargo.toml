@@ -1,0 +1,8 @@
+[workspace]
+members = [ 
+    "rust/calculator", 
+    "rust/crosstalk",
+    "rust/crosstalk/wasm",
+    "rust/withdraw"
+    ]
+resolver = "2"
