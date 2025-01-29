@@ -1,0 +1,22 @@
+package wasmexample:infoxchange;
+
+interface id-holder {
+    set-id: func( id: u32 ) -> result<_, string>;
+    get-id: func() -> result<u32, string>;
+}
+
+interface status-holder {
+    enum status {
+        unknown,
+        offline,
+        online,
+    }
+
+    set-status: func( status: status ) -> result<_, string>;
+    get-status: func() -> result<status, string>;
+}
+
+world infoxchange {
+    export id-holder;
+    import status-holder;
+}
