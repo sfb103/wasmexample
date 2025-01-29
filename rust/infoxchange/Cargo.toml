@@ -1,6 +1,9 @@
 [package]
 name = "infoxchange-app"
 version = "0.1.0"
+authors = ["Sean Bentley"]
 edition = "2021"
+rust-version = "1.57"
 
 [dependencies]
+wasmtime = "29.0.0"
