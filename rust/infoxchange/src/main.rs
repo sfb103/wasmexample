@@ -90,7 +90,7 @@ fn comp_worker(comp_ctx: CompContext) -> Result<()> {
 fn main() -> Result<()> {
     let comp_ctx = CompContext::new("./wasm/target/wasm32-wasip2/debug/infoxchange.wasm")?;
     let worker_ctx = comp_ctx.clone();
-    let comp_worker = thread::spawn( move||{ comp_worker(worker_ctx).unwrap(); } );
+    let comp_worker = thread::spawn( move|| comp_worker(worker_ctx).unwrap() );
     
     // just for this test case, let's sleep for 3s to give our comp_worker a chance to run for a bit before
     // setting the id
