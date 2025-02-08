@@ -6,4 +6,5 @@ edition = "2021"
 rust-version = "1.57"
 
 [dependencies]
-wasmtime = "29.0.0"
+wasmtime = "29.0.1"
+wasmtime-wasi = "29.0.1"  

@@ -1,8 +1,12 @@
 package wasmexample:infoxchange;
 
 interface id-holder {
-    set-id: func( id: u32 ) -> result<_, string>;
-    get-id: func() -> result<u32, string>;
+    set-id: func( id: s32 ) -> result<_, string>;
+    get-id: func() -> result<s32, string>;
+}
+
+interface worker {
+    do-work: func() -> bool;
 }
 
 interface status-holder {
@@ -18,5 +22,6 @@ interface status-holder {
 
 world infoxchange {
     export id-holder;
+    export worker;
     import status-holder;
 }
