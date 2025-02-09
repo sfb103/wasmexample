@@ -13,7 +13,7 @@ cd ..
 ```
 The build config under `.cargo/config.toml` ensures this builds to the wasm32-wasip2 (i.e. wasi preview2) target.  This will place the `infoxchange.wasm` file under `wasm/target/wasm32-wasip2/debug`
 
-### Run with Rust host with Wasmtime
+### Run with a Rust host with Wasmtime
 The Rust hosting code that compiles and runs `infoxchange.wasm` can be run with the following command:
 ```
 cargo run
