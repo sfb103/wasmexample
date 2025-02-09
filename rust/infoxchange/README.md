@@ -20,7 +20,7 @@ cargo run
 ```
 This will use the Wasmtime crate to read the wasm file, compile it, and link the component's exports and imports with the host code. The Rust host starts a component "worker" which calls the components "do-work" func in a repeated fashion until a false return signals to exit. This essentially provides a working thread context for the component. The host then waits a few seconds, just for testing purposes, and finally calls set-id on the component. After that it joins with the component's worker thread and waits for it to exit.
 
-Inside the wasm component's do-work function, it checks to see if an id has been set yet or not. If it has not been set yet, it sets status to offline. Once it is set, it sets status to online and signals it has no more work to do by returning false.
+Inside the wasm component's do-work function, it checks to see if an id has been set yet or not. If it has not been set yet, it call set-status with "offline". Once it is set, it call set-status with "online" and signals it has no more work to do by returning from do-work with false.
 
 ### Sample Output
 ```
