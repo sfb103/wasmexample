@@ -23,6 +23,7 @@ For details on the individual examples, see the README.md within each project di
 
 [rust/calculator/README.md](./rust/calculator/README.md)<br>
 [rust/crosstalk/README.md](./rust/crosstalk/README.md)<br>
+[rust/infoxchange/README.md](./rust/infoxchange/README.md)<br>
 [rust/withdraw/README.md](./rust/withdraw/README.md)<br>
 [cxx/withdraw/README.md](./cxx/withdraw/README.md)<br>
 [go/withdraw/README.md](./go/withdraw/README.md)<br>
