@@ -3,11 +3,7 @@
 ## To build and run...
 
 ### Build the Wasm Component
-<<<<<<< Updated upstream
-The infoxchange the Wasm Coponent is written in Rust.  The source can be found in `wasm/src/lib.rs`.<br>
-=======
 The infoxchange Wasm Coponent is written in Rust.  The source can be found in `wasm/src/lib.rs`.<br>
->>>>>>> Stashed changes
 
 Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built with simply:
 ```
