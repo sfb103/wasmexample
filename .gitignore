@@ -46,3 +46,4 @@ node_modules
 package-lock.json
 public
 wit_bindgen
+compile_commands.json
