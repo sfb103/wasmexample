@@ -45,3 +45,4 @@ cargo_test_results.xml
 node_modules
 package-lock.json
 public
+wit_bindgen

@@ -3,7 +3,11 @@
 ## To build and run...
 
 ### Build the Wasm Component
+<<<<<<< Updated upstream
 The infoxchange the Wasm Coponent is written in Rust.  The source can be found in `wasm/src/lib.rs`.<br>
+=======
+The infoxchange Wasm Coponent is written in Rust.  The source can be found in `wasm/src/lib.rs`.<br>
+>>>>>>> Stashed changes
 
 Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built with simply:
 ```
@@ -49,18 +53,17 @@ bentlesf@docker-desktop:~/projects/wasmexample/rust/infoxchange[$] cargo run
      Running `/home/bentlesf/projects/wasmexample/target/debug/infoxchange-app`
 
 comp_worker() calling do_work()
+do_work() hello from your rust wasm component!
 do_work() id: -1 <= 0, setting status to Offline
 set_status() called with status: Status::Offline
 
 comp_worker() calling do_work()
+do_work() hello from your rust wasm component!
 do_work() id: -1 <= 0, setting status to Offline
 set_status() called with status: Status::Offline
 
 comp_worker() calling do_work()
-do_work() id: -1 <= 0, setting status to Offline
-set_status() called with status: Status::Offline
-
-comp_worker() calling do_work()
+do_work() hello from your rust wasm component!
 do_work() id: -1 <= 0, setting status to Offline
 set_status() called with status: Status::Offline
 
@@ -69,6 +72,7 @@ set_id() setting id: 1
 main() successfully set_id: 1
 
 comp_worker() calling do_work()
+do_work() hello from your rust wasm component!
 do_work() id: 1 > 0, setting status to Online
 set_status() called with status: Status::Online
 bentlesf@docker-desktop:~/projects/wasmexample/rust/infoxchange[$]

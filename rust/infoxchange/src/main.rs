@@ -88,7 +88,7 @@ fn comp_worker(comp_ctx: CompContext) -> Result<()> {
 }
 
 fn main() -> Result<()> {
-    let comp_ctx = CompContext::new("./wasm/target/wasm32-wasip2/debug/infoxchange.wasm")?;
+    let comp_ctx = CompContext::new("./infoxchange.wasm")?;
     let worker_ctx = comp_ctx.clone();
     let comp_worker = thread::spawn( move|| comp_worker(worker_ctx).unwrap() );
     

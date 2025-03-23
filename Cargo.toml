@@ -4,7 +4,7 @@ members = [
     "rust/crosstalk",
     "rust/crosstalk/wasm",
     "rust/infoxchange",
-    "rust/infoxchange/wasm",    
+    "rust/infoxchange/wasm-rust",    
     "rust/withdraw",
     ]
 resolver = "2"
