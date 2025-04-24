@@ -2,9 +2,10 @@
 pub mod executor {
     use std::future::Future;
     use std::error::Error;
+    use std::time::Duration;
 
     /// A trait representing the ability to spawn asynchronous tasks.
-    pub trait Executor {
+    pub trait Executor: Sync + Send + Copy + 'static {
         /// The handle returned by `spawn`, allowing awaiting the task's completion.
         /// Uses GATs (Generic Associated Types) to be generic over the task's output type `T`.
         type JoinHandle<T: Send + 'static>: Future<Output = Result<T, Self::JoinError>> + Send + 'static;
@@ -12,6 +13,10 @@ pub mod executor {
         /// The error type returned when joining a task fails (e.g., due to panic).
         /// Must implement standard error traits and be Send + Sync + 'static.
         type JoinError: Error + Send + Sync + 'static;
+
+        /// Associated type for the future returned by `sleep`.
+        /// Must resolve to () and be Send + 'static.
+        type SleepFuture: Future<Output = ()> + Send + 'static;        
 
         /// Spawns a new asynchronous task to run on this executor.
         ///
@@ -38,6 +43,15 @@ pub mod executor {
         where
             F: FnOnce() -> T + Send + 'static,
             T: Send + 'static;
+
+        /// Pauses the current asynchronous task for the specified duration. This can
+        /// be used within tasks created either by spawn or spawn_blocking.
+        /// 
+        /// - `duration`: the amount of time to pause the task
+        /// 
+        /// Returns a future that pauses the current asynchronous task for the specified
+        /// duration when awaited.
+        fn sleep(&self, duration: Duration) -> Self::SleepFuture;
     }
 }
 
@@ -56,6 +70,9 @@ pub mod tokio_executor {
         // Tokio's JoinError fits the requirements.
         type JoinError = tokio::task::JoinError;
 
+        // Tokio's Sleep fits the requirements.
+        type SleepFuture = tokio::time::Sleep;     
+
         fn spawn<F, T>(&self, future: F) -> Self::JoinHandle<T>
         where
             F: Future<Output = T> + Send + 'static,
@@ -71,6 +88,10 @@ pub mod tokio_executor {
             // Delegate spawning directly to tokio::spawn_block.
             tokio::task::spawn_blocking(task)
         }
+
+        fn sleep(&self, duration: std::time::Duration) -> Self::SleepFuture {
+            tokio::time::sleep(duration)
+        }        
     }
 }
 
@@ -79,9 +100,15 @@ mod tests {
     use crate::executor::Executor;
     use crate::tokio_executor::TokioExecutor;
 
-    async fn run_task_on_executor<E: Executor>(executor: &E) {
+    use std::time::Duration;
+
+    async fn run_task_on_executor<E: Executor>(executor: E) {
+        // Since TokioExecutor is Copy, capturing `executor` by value in async move works.
+        // If E was only Clone, use: let exec_clone = executor.clone(); before spawn.        
         let handle = executor.spawn(async move {
             println!("Hello World!");
+            let duration = Duration::from_millis(30 as u64);
+            executor.sleep(duration).await; // Call sleep on the captured executor instance
         });
         handle.await.unwrap();
         println!("Future is joined.")
@@ -91,7 +118,7 @@ mod tests {
     async fn test_executor() {
         println!("Using TokioExecutor");
         let tokio_executor = TokioExecutor;
-        run_task_on_executor(&tokio_executor).await;
+        run_task_on_executor(tokio_executor).await;
         println!("Done.")
     }
 }
