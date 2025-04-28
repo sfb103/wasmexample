@@ -5,15 +5,17 @@
 ### Build the Wasm Component
 The infoxchange Wasm Component has both Rust and C++ implementations.  The source can be found in `wasm-rust/src/lib.rs` and `wasm-cpp/infoxchange.cpp` respectively.<br>
 
-Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built from Rust with simply:
+Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built by simply...<br>
+
+__*...from Rust:*__
 ```
 cd wasm-rust
 cargo build
 cd ..
 ```
-The build config under `.cargo/config.toml` ensures this builds to the wasm32-wasip2 (i.e. wasi preview2) target.  This will place the `infoxchange.wasm` file under `wasm-rust/target/wasm32-wasip2/debug`
+The build config under `.cargo/config.toml` ensures this builds to the wasm32-wasip2 (i.e. wasi v0.2) target.  This will place the `infoxchange.wasm` file under `wasm-rust/target/wasm32-wasip2/debug`
 
-Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built from C++ with simply:
+__*...or from C++:*__
 ```
 cd wasm-cpp
 ./build.sh
