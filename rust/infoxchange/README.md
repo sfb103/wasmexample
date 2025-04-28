@@ -11,7 +11,7 @@ cd wasm-rust
 cargo build
 cd ..
 ```
-The build config under `.cargo/config.toml` ensures this builds to the wasm32-wasip2 (i.e. wasi preview2) target.  This will place the `infoxchange.wasm` file under `wasm/target/wasm32-wasip2/debug`
+The build config under `.cargo/config.toml` ensures this builds to the wasm32-wasip2 (i.e. wasi preview2) target.  This will place the `infoxchange.wasm` file under `wasm-rust/target/wasm32-wasip2/debug`
 
 Using the `wasmdevcontainer` (see instructions in the toplevel [README.md](../../README.md)), the `infoxchange.wasm` can be built from C++ with simply:
 ```
@@ -26,7 +26,7 @@ The Rust hosting code that compiles and runs `infoxchange.wasm` can be run with 
 ```
 cargo run
 ```
-This will use the Wasmtime crate to read the wasm file, compile it, and link the component's exports and imports with the host code. The Rust host starts a component "worker" which calls the components "do-work" func in a repeated fashion until a false return signals to exit. This essentially provides a working thread context for the component. The host then waits a few seconds, just for testing purposes, and finally calls set-id on the component. After that it joins with the component's worker thread and waits for it to exit.
+As cloned, this will automatically run the wasm component built under `wasm-rust`. To run the component run under `wasm-cpp`, the `rust/infoxchange/infoxchange.wasm` softlink must be modified to point to `wasm-cpp/infoxchange.wasm`. This will use the Wasmtime crate to read the wasm file, compile it, and link the component's exports and imports with the host code. The Rust host starts a component "worker" which calls the components "do-work" func in a repeated fashion until a false return signals to exit. This essentially provides a working thread context for the component. The host then waits a few seconds, just for testing purposes, and finally calls set-id on the component. After that it joins with the component's worker thread and waits for it to exit.
 
 Inside the wasm component's do-work function, it checks to see if an id has been set yet or not. If it has not been set yet, it call set-status with "offline". Once it is set, it calls set-status with "online" and signals it has no more work to do by returning from do-work with false.
 
