@@ -1,5 +1,6 @@
 *.out
 *.wasm
+!rust/infoxchange/infoxchange.wasm
 build
 target
 Cargo.lock
