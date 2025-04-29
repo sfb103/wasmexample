@@ -6,5 +6,7 @@ edition = "2021"
 rust-version = "1.57"
 
 [dependencies]
-wasmtime = "29.0.1"
-wasmtime-wasi = "29.0.1"  
+wasmtime = "32.0.0"
+wasmtime-wasi = "32.0.0"  
+async-executor = { path = "../async-executor", version =  "0.1.0", features = ["tokio_executor"] }
+tokio = { version = "1.44.2", features = ["macros"] }
