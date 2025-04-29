@@ -1,6 +1,7 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
+use tokio::sync::Mutex;
 
-use wasmtime::{component::*, Config, Error};
+use wasmtime::{component::*, AsContextMut, Config, Error};
 use wasmtime::{Result, Engine, Store};
 use wasmtime_wasi::{IoView, WasiCtx, WasiView};
 
@@ -90,27 +91,19 @@ async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext) -> Result<
     let comp = comp_ctx.bindings.wasmexample_infoxchange_worker();
 
     // call the components's do_work(), note this gives the component a thread to execute on 
-    loop {
-        // These braces will ensure our mutex gets dropped before we enter the .await
-        // This is something that could aslo be accomplished by std::mem::drop, but
-        //    doing a drop just before the .await seems to confuse rust's static analysis...
-        //    so using the braces to accomplish the same thing.
-        { 
-            println!("\ncomp_worker() calling do_work()");
-            let mut store = comp_ctx.store.lock().unwrap();
-            
-            if !comp.call_do_work(&mut *store).await? {
-            //if !wasmtime_wasi::runtime::with_ambient_tokio_runtime(||comp.call_do_work(&mut *store))? {
-                break; // if do_work returns false, the break out of this loop and exit the thread
-            }
+    loop { 
+        println!("\ncomp_worker() calling do_work()");
+        let mut store = comp_ctx.store.lock().await;
+        if !comp.call_do_work(store.as_context_mut()).await? {
+            break; // if do_work returns false, then break out of this loop and exit the task
         }
+        drop(store); // release the lock before sleeping
         executor.sleep(std::time::Duration::from_secs(1)).await;
     }
-
     Ok(())
 }
 
-#[tokio::main]
+#[tokio::main(flavor="current_thread")]
 async fn main() -> Result<()> {
     let executor = TokioExecutor;
     let comp_ctx = CompContext::new("./infoxchange.wasm").await?;
@@ -121,15 +114,14 @@ async fn main() -> Result<()> {
     // setting the id
     executor.sleep(std::time::Duration::from_secs(3)).await;
 
-    {
-        let id = 1;
-        let mut store = comp_ctx.store.lock().unwrap();
-        println!("\nmain() calling set_id: {}", id);
-        match comp_ctx.bindings.wasmexample_infoxchange_id_holder().call_set_id(&mut *store, id) {
-            Ok(_) => println!("main() successfully set_id: {}", id),
-            Err(err) => println!("main() set_id: {} returned an error: {}", id, err),
-        };
-    }
+    let id = 1;
+    let mut store = comp_ctx.store.lock().await;
+    println!("\nmain() calling set_id: {}", id);
+    match comp_ctx.bindings.wasmexample_infoxchange_id_holder().call_set_id(store.as_context_mut(), id).await {
+        Ok(_) => println!("main() successfully set_id: {}", id),
+        Err(err) => println!("main() set_id: {} returned an error: {}", id, err),
+    };
+    drop(store); // release the lock before waiting on comp_worker
 
     comp_worker.await.unwrap()?;
     Ok(())
