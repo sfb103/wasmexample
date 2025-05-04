@@ -107,8 +107,7 @@ async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext) -> Result<
 async fn main() -> Result<()> {
     let executor = TokioExecutor;
     let comp_ctx = CompContext::new("./infoxchange.wasm").await?;
-    let worker_ctx = comp_ctx.clone();
-    let comp_worker = executor.spawn( comp_worker(executor,worker_ctx) );
+    let comp_worker = executor.spawn( comp_worker(executor,comp_ctx.clone()) );
     
     // just for this test case, let's sleep for 3s to give our comp_worker a chance to run for a bit before
     // setting the id
