@@ -48,8 +48,8 @@ impl CompContext {
 
         // instantiate our component
         let component = Component::from_file(&engine, wasm).unwrap();
-        let instance = linker.instantiate_async(&mut store, &component).await?;
-        let bindings = Infoxchange::new(&mut store, &instance)?;
+        let instance = linker.instantiate_async(store.as_context_mut(), &component).await?;
+        let bindings = Infoxchange::new(store.as_context_mut(), &instance)?;
 
         Ok(Self {
             store: Arc::new(Mutex::new(store)),
@@ -90,7 +90,7 @@ impl status_holder::Host for XchangeHost {
 async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext) -> Result<()> {
     let comp = comp_ctx.bindings.wasmexample_infoxchange_worker();
 
-    // call the components's do_work(), note this gives the component a thread to execute on 
+    // call the components's do_work(), note this gives the component a task to execute on 
     loop { 
         println!("\ncomp_worker() calling do_work()");
         let mut store = comp_ctx.store.lock().await;
