@@ -98,7 +98,7 @@ mod test_import_export {
                     .build(),
                 table: ResourceTable::new(),
             },
-            |linker| { AdderImportExport::add_to_linker(linker, |host_state: &mut TestHost| host_state) },
+            |linker| AdderImportExport::add_to_linker(linker, |host: &mut TestHost| host),
             |mut store, instance| AdderImportExport::new(store.as_context_mut(), instance),
         ).await.unwrap();
 
@@ -161,7 +161,7 @@ mod test_import_only {
                     .build(),
                 table: ResourceTable::new(),
             },
-            |linker| { AdderImportOnly::add_to_linker(linker, |host_state: &mut TestHost| host_state) },
+            |linker| AdderImportOnly::add_to_linker(linker, |host: &mut TestHost| host),
             |mut store, instance| AdderImportOnly::new(store.as_context_mut(), instance),
         ).await.unwrap();
 
