@@ -1,0 +1,14 @@
+package docs:adder;
+
+interface add {
+    add: func(x: u32, y: u32) -> u32;
+}
+
+interface test {
+    test: func() -> bool;
+}
+
+world adder {
+    export add;
+    import test;
+}

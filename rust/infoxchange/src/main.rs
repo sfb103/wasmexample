@@ -1,12 +1,9 @@
-use std::sync::Arc;
-use tokio::sync::Mutex;
-
-use wasmtime::{component::*, AsContextMut, Config, Error};
-use wasmtime::{Result, Engine, Store};
-use wasmtime_wasi::{IoView, WasiCtx, WasiView};
+use wasmtime::{component::{bindgen, ResourceTable}, AsContextMut, Result};
+use wasmtime_wasi::{IoView, WasiCtx, WasiView, WasiCtxBuilder};
 
 use async_executor::executor::Executor;
 use async_executor::tokio_executor::TokioExecutor;
+use wasm_comp_ctx::CompContext;
 
 use wasmexample::infoxchange::status_holder::{self, Status};
 
@@ -16,54 +13,11 @@ bindgen!({
     async: true,
 });
 
-#[derive(Clone)]
-struct CompContext {
-    store: Arc<Mutex<Store<XchangeHost>>>,
-    bindings: Arc<Infoxchange>,
-}
-
-impl CompContext {
-    pub async fn new(wasm: &str) -> Result<Self, Error> {
-        // setup our engine and linker to support an async context
-        let mut config = Config::new();
-        config.async_support(true);
-        let engine = Engine::new(&config).unwrap();    
-        let mut linker = Linker::<XchangeHost>::new(&engine);
-
-        // add our host to the linker, so we can provide a world for our component
-        wasmtime_wasi::add_to_linker_async(&mut linker)?;
-        Infoxchange::add_to_linker(&mut linker, |s: &mut XchangeHost| s)?;
-    
-        // setup our store that holds the context our host uses with our component
-        let mut store = Store::new(
-            &engine,
-            XchangeHost { 
-                wasi_ctx: wasmtime_wasi::WasiCtxBuilder::new()
-                    .inherit_stdout()
-                    .build(),
-                table: ResourceTable::new(),
-                status: Status::Unknown
-            },
-        );
-
-        // instantiate our component
-        let component = Component::from_file(&engine, wasm).unwrap();
-        let instance = linker.instantiate_async(store.as_context_mut(), &component).await?;
-        let bindings = Infoxchange::new(store.as_context_mut(), &instance)?;
-
-        Ok(Self {
-            store: Arc::new(Mutex::new(store)),
-            bindings: Arc::new(bindings),
-        })
-    }
-}
-
 struct XchangeHost {
     wasi_ctx: WasiCtx,
     table: ResourceTable,
     status: Status,
 }
-
 impl IoView for XchangeHost{
     fn table(&mut self) -> &mut ResourceTable {
         &mut self.table
@@ -74,7 +28,6 @@ impl WasiView for XchangeHost {
         &mut self.wasi_ctx
     }
 }
-
 impl status_holder::Host for XchangeHost {
     async fn set_status(&mut self,status: Status) -> Result<(),String> {
         println!("set_status() called with status: {:?}", status);
@@ -87,7 +40,7 @@ impl status_holder::Host for XchangeHost {
     }
 }
 
-async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext) -> Result<()> {
+async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext<XchangeHost,Infoxchange>) -> Result<()> {
     let comp = comp_ctx.bindings.wasmexample_infoxchange_worker();
 
     // call the components's do_work(), note this gives the component a task to execute on 
@@ -106,8 +59,20 @@ async fn comp_worker<E: Executor>(executor: E, comp_ctx: CompContext) -> Result<
 #[tokio::main(flavor="current_thread")]
 async fn main() -> Result<()> {
     let executor = TokioExecutor;
-    let comp_ctx = CompContext::new("./infoxchange.wasm").await?;
-    let comp_worker = executor.spawn( comp_worker(executor,comp_ctx.clone()) );
+    let comp_ctx = CompContext::new(
+        "./infoxchange.wasm",
+        || XchangeHost {
+            // add permissions to the wasi sandbox as needed
+            wasi_ctx: WasiCtxBuilder::new()
+                .inherit_stdout()
+                .build(),
+            table: ResourceTable::new(),
+            status: Status::Unknown,
+        },
+        |linker| { Infoxchange::add_to_linker(linker, |host_state: &mut XchangeHost| host_state) },
+        |mut store, instance| { Infoxchange::new(store.as_context_mut(), instance) },
+    ).await?;
+    let comp_worker = executor.spawn( comp_worker(executor, comp_ctx.clone()) );
     
     // just for this test case, let's sleep for 3s to give our comp_worker a chance to run for a bit before
     // setting the id

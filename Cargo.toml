@@ -1,10 +1,12 @@
 [workspace]
-members = [ "rust/async-executor", 
+members = [ "rust/add", 
+    "rust/async-executor", 
     "rust/calculator", 
     "rust/crosstalk",
     "rust/crosstalk/wasm",
     "rust/infoxchange",
-    "rust/infoxchange/wasm-rust",    
+    "rust/infoxchange/wasm-rust",
+    "rust/wasm-comp-ctx",    
     "rust/withdraw",
     ]
 resolver = "2"

@@ -1,6 +1,7 @@
 *.out
 *.wasm
 !rust/infoxchange/infoxchange.wasm
+!rust/wasm-comp-ctx/tests/test.wasm
 build
 target
 Cargo.lock
