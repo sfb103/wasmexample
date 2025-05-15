@@ -5,11 +5,11 @@ use wasmtime::{
     component::{Component, Instance, Linker},
     AsContextMut, Config, Engine, Error, Result, Store, StoreContextMut,
 };
-use wasmtime_wasi::{WasiView, IoView};
+use wasmtime_wasi::WasiView;
 
 pub struct CompContext<THost, TBindings>
 where
-    THost: WasiView + IoView + Send + 'static,
+    THost: WasiView + Send + 'static,
     TBindings: Send + Sync + 'static,
 {
     pub store: Arc<Mutex<Store<THost>>>,
@@ -18,7 +18,7 @@ where
 
 impl<THost, TBindings> CompContext<THost, TBindings>
 where
-    THost: WasiView + IoView + Send + 'static, // WasiView constraint required for wasmtime_wasi::add_to_linker_async
+    THost: WasiView + Send + 'static, // WasiView constraint required for wasmtime_wasi::add_to_linker_async
     TBindings: Send + Sync + 'static,
 {
     pub async fn new<FCreateHostData, FLinkerAdd, FCreateBindings>(
@@ -74,7 +74,7 @@ where
 // manually with a custom impl of fn clone().
 impl<THost, TBindings> Clone for CompContext<THost, TBindings>
 where
-    THost: WasiView + IoView +  Send + 'static,
+    THost: WasiView + Send + 'static,
     TBindings: Send + Sync + 'static,
 {
     fn clone(&self) -> Self {
