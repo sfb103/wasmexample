@@ -1,5 +1,5 @@
 [workspace]
-members = [ "rust/add", 
+members = [
     "rust/async-executor", 
     "rust/calculator", 
     "rust/crosstalk",

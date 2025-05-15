@@ -1,4 +1,4 @@
-package docs:adder;
+package docs:adder-import-export;
 
 interface add {
     add: func(x: u32, y: u32) -> u32;
@@ -8,7 +8,7 @@ interface test {
     test: func() -> bool;
 }
 
-world adder {
+world adder-import-export {
     export add;
     import test;
 }

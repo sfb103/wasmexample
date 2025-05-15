@@ -1,0 +1,9 @@
+package docs:adder-import-only;
+
+interface test {
+    test: func() -> bool;
+}
+
+world adder-import-only {
+    import test;
+}

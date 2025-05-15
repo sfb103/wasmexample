@@ -69,8 +69,8 @@ async fn main() -> Result<()> {
             table: ResourceTable::new(),
             status: Status::Unknown,
         },
-        |linker| { Infoxchange::add_to_linker(linker, |host_state: &mut XchangeHost| host_state) },
-        |mut store, instance| { Infoxchange::new(store.as_context_mut(), instance) },
+        |linker| Infoxchange::add_to_linker(linker, |host: &mut XchangeHost| host),
+        |mut store, instance| Infoxchange::new(store.as_context_mut(), instance),
     ).await?;
     let comp_worker = executor.spawn( comp_worker(executor, comp_ctx.clone()) );
     
